@@ -1,0 +1,25 @@
+(* ============================================================
+   CONFIGURACIÓN DEL AGENTE DE CORREO
+   Archivo de claves y variables de entorno
+   ============================================================ *)
+
+OPENAI_API_KEY = "sk-PEGA_AQUÍ_TU_CLAVE_DE_OPENAI"
+
+(* Modelo a usar. Opciones recomendadas:
+     gpt-4o          → más inteligente, algo más lento
+     gpt-4o-mini     → rápido y económico (recomendado para pruebas)
+     gpt-3.5-turbo   → más barato, menos capaz
+*)
+OPENAI_MODEL = "gpt-4o-mini"
+
+(* Temperatura de la respuesta (0 = muy determinista, 1 = más creativo) *)
+TEMPERATURE = 0.4
+
+(* ============================================================
+   INSTRUCCIONES
+   1. Sustituye el valor de OPENAI_API_KEY por tu clave real.
+   2. La clave empieza siempre por "sk-..."
+   3. Guarda este archivo y ábrelo desde el agente de correo
+      pulsando "Cargar config.nb" en la pantalla de ajustes.
+   4. NUNCA compartas este archivo ni lo subas a GitHub.
+   ============================================================ *)

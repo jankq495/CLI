@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Serpiente Maldita</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Courier New', monospace;
+      color: #cc0000;
+      background-image:
+        radial-gradient(ellipse at 50% 0%, #1a000088 0%, transparent 70%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, #1a000033 39px, #1a000033 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, #1a000033 39px, #1a000033 40px);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 0.3em;
+      color: #cc0000;
+      text-shadow: 0 0 18px #ff0000, 0 0 40px #880000;
+      margin-bottom: 10px;
+      font-family: 'Creepster', 'Courier New', monospace;
+    }
+
+    #tagline {
+      font-size: 0.75rem;
+      color: #660000;
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+
+    #scoreboard {
+      display: flex;
+      gap: 48px;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+    }
+
+    #scoreboard span { color: #660000; }
+    #scoreboard strong { color: #ff3333; text-shadow: 0 0 6px #ff000088; }
+
+    #canvas-wrapper {
+      position: relative;
+      border: 2px solid #660000;
+      box-shadow: 0 0 40px #ff000033, inset 0 0 40px #11000066;
+      border-radius: 2px;
+    }
+
+    canvas { display: block; background: #0d0000; }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0d0000ee;
+      border-radius: 2px;
+      gap: 14px;
+    }
+
+    #overlay h2 {
+      font-size: 1.8rem;
+      color: #ff0000;
+      text-shadow: 0 0 14px #ff000099;
+      letter-spacing: 0.2em;
+      font-family: 'Creepster', 'Courier New', monospace;
+    }
+
+    #overlay p { color: #880000; font-size: 0.85rem; letter-spacing: 0.05em; }
+    #overlay .subscore { color: #cc0000; font-size: 1rem; }
+
+    #overlay button {
+      margin-top: 8px;
+      padding: 12px 32px;
+      background: #5a0000;
+      border: 1px solid #990000;
+      border-radius: 2px;
+      color: #ff4444;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    #overlay button:hover {
+      background: #880000;
+      box-shadow: 0 0 16px #ff000066;
+      color: #fff;
+    }
+
+    #controls {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(2, 44px);
+      gap: 6px;
+    }
+
+    .ctrl-btn {
+      background: #1a0000;
+      border: 1px solid #440000;
+      border-radius: 4px;
+      color: #660000;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:active {
+      background: #660000;
+      color: #ff4444;
+      border-color: #aa0000;
+    }
+
+    #btn-up    { grid-column: 2; grid-row: 1; }
+    #btn-left  { grid-column: 1; grid-row: 2; }
+    #btn-down  { grid-column: 2; grid-row: 2; }
+    #btn-right { grid-column: 3; grid-row: 2; }
+
+    #hint {
+      margin-top: 12px;
+      font-size: 0.72rem;
+      color: #3a0000;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>&#x2620; LA SERPIENTE MALDITA &#x2620;</h1>
+<div id="tagline">ALIMENTA TU HAMBRE... DE SANGRE</div>
+
+<div id="scoreboard">
+  <div><span>DEVORADOS </span><strong id="score">0</strong></div>
+  <div><span>RECORD    </span><strong id="best">0</strong></div>
+  <div><span>NIVEL     </span><strong id="level">1</strong></div>
+</div>
+
+<div id="canvas-wrapper">
+  <canvas id="canvas" width="400" height="400"></canvas>
+
+  <div id="overlay">
+    <h2 id="overlay-title">&#x2620; SERPIENTE MALDITA &#x2620;</h2>
+    <p id="overlay-msg">Devora a los inocentes. No dejes escapar ninguno.</p>
+    <p class="subscore" id="overlay-sub"></p>
+    <button id="btn-start">DESPERTAR A LA BESTIA</button>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="ctrl-btn" id="btn-up">▲</button>
+  <button class="ctrl-btn" id="btn-left">◀</button>
+  <button class="ctrl-btn" id="btn-down">▼</button>
+  <button class="ctrl-btn" id="btn-right">▶</button>
+</div>
+
+<div id="hint">Flechas / WASD para moverse &nbsp;|&nbsp; P o Espacio para pausar</div>
+
+<script>
+  const canvas  = document.getElementById('canvas');
+  const ctx     = canvas.getContext('2d');
+  const overlay = document.getElementById('overlay');
+  const btnStart     = document.getElementById('btn-start');
+  const scoreEl      = document.getElementById('score');
+  const bestEl       = document.getElementById('best');
+  const levelEl      = document.getElementById('level');
+  const overlayTitle = document.getElementById('overlay-title');
+  const overlayMsg   = document.getElementById('overlay-msg');
+  const overlaySub   = document.getElementById('overlay-sub');
+
+  const COLS = 20, ROWS = 20;
+  const CELL = canvas.width / COLS;
+
+  let snake, dir, nextDir, food, score, best, level, speed, loop, paused, started;
+  let bloodSplatters = [];  // persistent blood stains on floor
+  let eatAnim = null;       // flash animation on eat
+
+  best = parseInt(localStorage.getItem('snake_gore_best') || '0');
+  bestEl.textContent = best;
+
+  // ─── INIT ────────────────────────────────────────────────────────────────
+  function init() {
+    snake   = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+    dir     = { x: 1, y: 0 };
+    nextDir = { x: 1, y: 0 };
+    score   = 0; level = 1; speed = 160;
+    paused  = false; started = true;
+    bloodSplatters = [];
+    eatAnim = null;
+    scoreEl.textContent = 0;
+    levelEl.textContent = 1;
+    overlay.style.display = 'none';
+    placeFood();
+    clearInterval(loop);
+    loop = setInterval(tick, speed);
+    requestAnimationFrame(drawLoop);
+  }
+
+  function placeFood() {
+    let pos;
+    do {
+      pos = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+    } while (snake.some(s => s.x === pos.x && s.y === pos.y));
+    food = { ...pos, wobble: Math.random() * Math.PI * 2 };
+  }
+
+  // ─── TICK ─────────────────────────────────────────────────────────────────
+  function tick() {
+    if (paused) return;
+    dir = { ...nextDir };
+    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return gameOver();
+    if (snake.some(s => s.x === head.x && s.y === head.y)) return gameOver();
+
+    snake.unshift(head);
+
+    if (head.x === food.x && head.y === food.y) {
+      score++;
+      scoreEl.textContent = score;
+      if (score > best) { best = score; bestEl.textContent = best; localStorage.setItem('snake_gore_best', best); }
+
+      // Splatter blood where the child was eaten
+      addBloodSplatter(food.x, food.y);
+      eatAnim = { t: 1.0 };
+
+      const newLevel = Math.floor(score / 5) + 1;
+      if (newLevel !== level) {
+        level = newLevel; levelEl.textContent = level;
+        speed = Math.max(55, 160 - (level - 1) * 18);
+        clearInterval(loop);
+        loop = setInterval(tick, speed);
+      }
+      placeFood();
+    } else {
+      snake.pop();
+    }
+  }
+
+  // ─── BLOOD ────────────────────────────────────────────────────────────────
+  function addBloodSplatter(gx, gy) {
+    const cx = gx * CELL + CELL / 2;
+    const cy = gy * CELL + CELL / 2;
+    const drops = [];
+    const n = 6 + Math.floor(Math.random() * 6);
+    for (let i = 0; i < n; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 3 + Math.random() * CELL * 0.7;
+      drops.push({
+        x: cx + Math.cos(angle) * dist,
+        y: cy + Math.sin(angle) * dist,
+        r: 1.5 + Math.random() * 4,
+      });
+    }
+    bloodSplatters.push({ cx, cy, drops, alpha: 0.85 });
+    // Keep max 60 splatters for perf
+    if (bloodSplatters.length > 60) bloodSplatters.shift();
+  }
+
+  // ─── GAME OVER ────────────────────────────────────────────────────────────
+  function gameOver() {
+    clearInterval(loop);
+    started = false;
+    overlayTitle.textContent = '☠ HAS MUERTO ☠';
+    overlayMsg.textContent   = 'La serpiente ha perecido... por ahora.';
+    overlaySub.textContent   = `Niños devorados: ${score}`;
+    btnStart.textContent     = 'RESUCITAR';
+    overlay.style.display    = 'flex';
+  }
+
+  // ─── DRAW LOOP ────────────────────────────────────────────────────────────
+  function drawLoop() {
+    draw();
+    if (eatAnim) {
+      eatAnim.t -= 0.05;
+      if (eatAnim.t <= 0) eatAnim = null;
+    }
+    requestAnimationFrame(drawLoop);
+  }
+
+  function draw() {
+    // Background
+    ctx.fillStyle = '#0d0000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Subtle grid lines
+    ctx.strokeStyle = '#1a0000';
+    ctx.lineWidth = 0.5;
+    for (let x = 0; x <= COLS; x++) {
+      ctx.beginPath(); ctx.moveTo(x * CELL, 0); ctx.lineTo(x * CELL, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y <= ROWS; y++) {
+      ctx.beginPath(); ctx.moveTo(0, y * CELL); ctx.lineTo(canvas.width, y * CELL); ctx.stroke();
+    }
+
+    // Blood splatters on floor
+    bloodSplatters.forEach(s => {
+      ctx.save();
+      ctx.globalAlpha = s.alpha;
+      // Pool center
+      ctx.fillStyle = '#660000';
+      ctx.beginPath();
+      ctx.arc(s.cx, s.cy, CELL * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      // Drops
+      ctx.fillStyle = '#880000';
+      s.drops.forEach(d => {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    });
+
+    // Screen flash on eat
+    if (eatAnim && eatAnim.t > 0) {
+      ctx.save();
+      ctx.globalAlpha = eatAnim.t * 0.18;
+      ctx.fillStyle = '#ff0000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
+    // Child figure (food)
+    if (food) {
+      const fx = food.x * CELL + CELL / 2;
+      const fy = food.y * CELL + CELL / 2;
+      food.wobble += 0.08;
+      const wobbleX = Math.sin(food.wobble) * 1.5;
+      const pulse   = 0.5 + 0.5 * Math.sin(Date.now() / 250);
+
+      ctx.save();
+      ctx.shadowBlur  = 10 + pulse * 10;
+      ctx.shadowColor = '#ff6600';
+      ctx.translate(fx + wobbleX, fy);
+
+      // Body glow
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, CELL * 0.6);
+      grad.addColorStop(0, 'rgba(255,80,0,0.15)');
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(0, 0, CELL * 0.6, 0, Math.PI * 2); ctx.fill();
+
+      drawChild(ctx, 0, 0, CELL * 0.38);
+      ctx.restore();
+    }
+
+    // Snake
+    snake.forEach((seg, i) => {
+      const t   = i / Math.max(snake.length - 1, 1);
+      // Head: bright blood red → tail: dark rot
+      const r   = Math.round(180 - t * 100);
+      const g   = Math.round(10 + t * 5);
+      const bv  = Math.round(10);
+
+      ctx.save();
+      ctx.shadowBlur  = i === 0 ? 20 : 8;
+      ctx.shadowColor = i === 0 ? '#ff2200' : '#660000';
+      ctx.fillStyle   = `rgb(${r},${g},${bv})`;
+      const pad = i === 0 ? 1 : 2;
+      roundRect(ctx, seg.x * CELL + pad, seg.y * CELL + pad, CELL - pad * 2, CELL - pad * 2, 5);
+      ctx.fill();
+
+      // Scale texture
+      if (i > 0) {
+        ctx.fillStyle = `rgba(0,0,0,0.25)`;
+        ctx.beginPath();
+        ctx.arc(seg.x * CELL + CELL / 2, seg.y * CELL + CELL / 2, CELL * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Head details
+      if (i === 0) {
+        const ex   = seg.x * CELL + CELL / 2 + dir.x * 4;
+        const ey   = seg.y * CELL + CELL / 2 + dir.y * 4;
+        const offX = dir.y * 4, offY = dir.x * 4;
+
+        // Forked tongue
+        ctx.strokeStyle = '#ff3333';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        const tx = seg.x * CELL + CELL / 2 + dir.x * (CELL * 0.5);
+        const ty = seg.y * CELL + CELL / 2 + dir.y * (CELL * 0.5);
+        ctx.moveTo(tx - dir.x * 4, ty - dir.y * 4);
+        ctx.lineTo(tx, ty);
+        ctx.lineTo(tx + dir.x * 3 + dir.y * 2, ty + dir.y * 3 + dir.x * 2);
+        ctx.moveTo(tx, ty);
+        ctx.lineTo(tx + dir.x * 3 - dir.y * 2, ty + dir.y * 3 - dir.x * 2);
+        ctx.stroke();
+
+        // Eyes — yellow slit pupils
+        ctx.fillStyle = '#ffcc00';
+        ctx.beginPath(); ctx.arc(ex + offX, ey + offY, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(ex - offX, ey - offY, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000';
+        // Vertical slit
+        ctx.fillRect(ex + offX - 0.8, ey + offY - 2.5, 1.6, 5);
+        ctx.fillRect(ex - offX - 0.8, ey - offY - 2.5, 1.6, 5);
+      }
+
+      ctx.restore();
+    });
+  }
+
+  // ─── DRAW A TINY CHILD FIGURE ─────────────────────────────────────────────
+  function drawChild(ctx, cx, cy, scale) {
+    const s = scale;
+    // Arms up screaming
+    ctx.strokeStyle = '#ffcc99';
+    ctx.fillStyle   = '#ffcc99';
+    ctx.lineWidth   = s * 0.28;
+    ctx.lineCap     = 'round';
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(cx, cy - s * 0.85, s * 0.3, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffcc99'; ctx.fill();
+
+    // Scream mouth
+    ctx.fillStyle = '#330000';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - s * 0.78, s * 0.1, s * 0.13, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes (scared wide)
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(cx - s * 0.12, cy - s * 0.93, s * 0.06, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + s * 0.12, cy - s * 0.93, s * 0.06, 0, Math.PI * 2); ctx.fill();
+
+    // Body
+    ctx.strokeStyle = '#cc4444';
+    ctx.lineWidth   = s * 0.28;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s * 0.55);
+    ctx.lineTo(cx, cy + s * 0.2);
+    ctx.stroke();
+
+    // Arms up (panic)
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s * 0.4);
+    ctx.lineTo(cx - s * 0.45, cy - s * 0.75);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s * 0.4);
+    ctx.lineTo(cx + s * 0.45, cy - s * 0.75);
+    ctx.stroke();
+
+    // Legs
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + s * 0.2);
+    ctx.lineTo(cx - s * 0.22, cy + s * 0.7);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + s * 0.2);
+    ctx.lineTo(cx + s * 0.22, cy + s * 0.7);
+    ctx.stroke();
+  }
+
+  // ─── UTILS ────────────────────────────────────────────────────────────────
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  // ─── CONTROLS ────────────────────────────────────────────────────────────
+  const KEYS = {
+    ArrowUp:    { x: 0, y: -1 }, w: { x: 0, y: -1 }, W: { x: 0, y: -1 },
+    ArrowDown:  { x: 0, y:  1 }, s: { x: 0, y:  1 }, S: { x: 0, y:  1 },
+    ArrowLeft:  { x: -1, y: 0 }, a: { x: -1, y: 0 }, A: { x: -1, y: 0 },
+    ArrowRight: { x:  1, y: 0 }, d: { x:  1, y: 0 }, D: { x:  1, y: 0 },
+  };
+
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'p' || e.key === 'P' || e.key === ' ') && started) {
+      e.preventDefault();
+      paused = !paused;
+      if (paused) {
+        overlayTitle.textContent = '|| PAUSA';
+        overlayMsg.textContent   = 'La serpiente duerme... por ahora.';
+        overlaySub.textContent   = '';
+        btnStart.textContent     = 'CONTINUAR';
+        overlay.style.display    = 'flex';
+      } else {
+        overlay.style.display = 'none';
+      }
+      return;
+    }
+    const d = KEYS[e.key];
+    if (d && !(d.x === -dir.x && d.y === -dir.y)) { nextDir = d; e.preventDefault(); }
+  });
+
+  btnStart.addEventListener('click', () => {
+    if (paused) { paused = false; overlay.style.display = 'none'; return; }
+    init();
+  });
+
+  function setDir(d) { if (!(d.x === -dir.x && d.y === -dir.y)) nextDir = d; }
+  document.getElementById('btn-up').addEventListener('click',    () => setDir({ x: 0, y: -1 }));
+  document.getElementById('btn-down').addEventListener('click',  () => setDir({ x: 0, y:  1 }));
+  document.getElementById('btn-left').addEventListener('click',  () => setDir({ x: -1, y: 0 }));
+  document.getElementById('btn-right').addEventListener('click', () => setDir({ x:  1, y: 0 }));
+
+  let touchX, touchY;
+  canvas.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; e.preventDefault(); }, { passive: false });
+  canvas.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    const dy = e.changedTouches[0].clientY - touchY;
+    if (Math.abs(dx) > Math.abs(dy)) setDir({ x: dx > 0 ? 1 : -1, y: 0 });
+    else setDir({ x: 0, y: dy > 0 ? 1 : -1 });
+    e.preventDefault();
+  }, { passive: false });
+
+  // Initial static draw
+  ctx.fillStyle = '#0d0000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+</script>
+</body>
+</html>

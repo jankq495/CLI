@@ -1,0 +1,417 @@
+/* ================================================================
+   MUDX4.COM — Custom CSS
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   VARIABLES
+   ---------------------------------------------------------------- */
+:root {
+  --mud-amber:       #e8a020;
+  --mud-amber-dark:  #c47d10;
+  --mud-amber-glow:  rgba(232, 160, 32, 0.18);
+  --mud-easing:      cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ----------------------------------------------------------------
+   FILM GRAIN — ruido fotográfico muy sutil sobre toda la página
+   ---------------------------------------------------------------- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  animation: grain 0.6s steps(1) infinite;
+}
+
+@keyframes grain {
+  0%   { background-position: 0 0; }
+  25%  { background-position: -12% 8%; }
+  50%  { background-position: 8% -15%; }
+  75%  { background-position: -6% 20%; }
+  100% { background-position: 10% -5%; }
+}
+
+/* ----------------------------------------------------------------
+   RODADA — textura de neumático real como fondo de página
+   Repetida a escala pequeña, 4% opacidad: da profundidad sin
+   que se vea como un elemento gráfico añadido
+   ---------------------------------------------------------------- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--mudx4-track-real2-img);
+  background-size: 180px auto;
+  background-repeat: repeat;
+  opacity: 0.04;
+  mix-blend-mode: screen;
+}
+
+/* ----------------------------------------------------------------
+   HERO — foto real de acción + overlays cinematográficos
+   ---------------------------------------------------------------- */
+
+/* Reemplazar la imagen de Shopify con la foto de acción real */
+.hero__media-wrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__media-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--mudx4-hero-action-img) center / cover no-repeat;
+  z-index: 1;
+}
+
+/* Ocultar imagen original */
+.hero .hero__image img,
+.hero picture {
+  opacity: 0;
+}
+
+/* Gradiente oscuro inferior */
+.hero__container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top,  rgba(8,8,8,0.90) 0%, rgba(8,8,8,0.30) 45%, transparent 100%),
+    linear-gradient(to right, rgba(8,8,8,0.45) 0%, transparent 60%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Mancha de barro sutil en esquina inferior izquierda del hero */
+.hero__container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 380px;
+  height: 380px;
+  background:
+    var(--mudx4-mud-close-img) center / cover no-repeat;
+  opacity: 0.07;
+  mask-image: radial-gradient(ellipse 70% 70% at 0% 100%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 0% 100%, black 20%, transparent 75%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Barra ámbar izquierda */
+.hero {
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 15%;
+  width: 3px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--mud-amber) 50%, transparent);
+  z-index: 20;
+}
+
+/* Contenido del hero encima de todo */
+.hero__content-wrapper {
+  position: relative;
+  z-index: 10;
+}
+
+/* Tipografía del hero */
+.hero h1,
+.hero h2 {
+  text-shadow:
+    0 2px 32px rgba(0,0,0,0.95),
+    0 0 64px rgba(232,160,32,0.10);
+}
+
+/* CTA pulse */
+@keyframes mudx4-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,160,32,0.45), 0 4px 16px rgba(0,0,0,0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(232,160,32,0), 0 4px 16px rgba(0,0,0,0.5); }
+}
+
+.hero .button,
+.hero a.button {
+  animation: mudx4-pulse 3s ease infinite;
+  position: relative;
+  z-index: 11;
+}
+
+/* ----------------------------------------------------------------
+   MEDIA-WITH-CONTENT — foto wilderness real
+   ---------------------------------------------------------------- */
+.media-with-content .media-block__media,
+[data-testid='media-with-content'] .media-block__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.media-with-content .media-block__media::after,
+[data-testid='media-with-content'] .media-block__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--mudx4-wilderness-img) center / cover no-repeat;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.media-with-content .media-block__media img,
+[data-testid='media-with-content'] .media-block__media img {
+  opacity: 0;
+}
+
+/* Rim ámbar en la imagen de sección */
+.media-with-content .media-block__media,
+[data-testid='media-with-content'] .media-block__media {
+  box-shadow:
+    0 0 0 1px rgba(232,160,32,0.18),
+    0 20px 60px rgba(0,0,0,0.6);
+}
+
+/* ----------------------------------------------------------------
+   HEADINGS — subrayado ámbar al entrar en viewport
+   ---------------------------------------------------------------- */
+.shopify-section h2 {
+  position: relative;
+}
+
+.shopify-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--mud-amber), var(--mud-amber-dark), transparent);
+  transition: width 0.65s var(--mud-easing) 0.1s;
+}
+
+.shopify-section h2.mudx4-in-view::after {
+  width: 48px;
+}
+
+.section-resource-list__header {
+  border-left: 3px solid var(--mud-amber);
+  padding-left: 16px !important;
+}
+
+/* ----------------------------------------------------------------
+   PRODUCT CARDS — hover profesional
+   ---------------------------------------------------------------- */
+.product-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.32s var(--mud-easing), box-shadow 0.32s ease;
+  border-radius: 3px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(232,160,32,0.5);
+  z-index: 2;
+}
+
+/* Barra ámbar inferior en hover */
+.product-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--mud-amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.38s var(--mud-easing);
+}
+
+.product-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* Zoom de imagen */
+.card-gallery {
+  transition: transform 0.5s var(--mud-easing);
+  overflow: hidden;
+}
+
+.product-card:hover .card-gallery {
+  transform: scale(1.04);
+}
+
+/* ----------------------------------------------------------------
+   COLLECTION CARDS
+   ---------------------------------------------------------------- */
+.resource-list__item {
+  transition: transform 0.32s var(--mud-easing), box-shadow 0.32s ease;
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.resource-list__item:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 10px 32px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(232,160,32,0.3);
+}
+
+.resource-list__item img {
+  transition: transform 0.5s var(--mud-easing);
+}
+
+.resource-list__item:hover img {
+  transform: scale(1.05);
+}
+
+/* ----------------------------------------------------------------
+   BOTONES — destello de luz en hover
+   ---------------------------------------------------------------- */
+.button,
+a.button,
+button[type='submit'] {
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before,
+a.button::before,
+button[type='submit']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -70%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.18) 50%, transparent);
+  transform: skewX(-15deg);
+  pointer-events: none;
+}
+
+.button:hover::before,
+a.button:hover::before,
+button[type='submit']:hover::before {
+  left: 120%;
+  transition: left 0.5s ease;
+}
+
+/* ----------------------------------------------------------------
+   SCROLL REVEAL
+   ---------------------------------------------------------------- */
+.mudx4-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--mud-easing), transform 0.7s var(--mud-easing);
+}
+
+.mudx4-reveal.mudx4-in-view {
+  opacity: 1;
+  transform: none;
+}
+
+.mudx4-stagger .mudx4-reveal:nth-child(1) { transition-delay: 0ms; }
+.mudx4-stagger .mudx4-reveal:nth-child(2) { transition-delay: 70ms; }
+.mudx4-stagger .mudx4-reveal:nth-child(3) { transition-delay: 140ms; }
+.mudx4-stagger .mudx4-reveal:nth-child(4) { transition-delay: 210ms; }
+.mudx4-stagger .mudx4-reveal:nth-child(5) { transition-delay: 280ms; }
+.mudx4-stagger .mudx4-reveal:nth-child(6) { transition-delay: 350ms; }
+
+.mudx4-reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s var(--mud-easing), transform 0.8s var(--mud-easing);
+}
+
+.mudx4-reveal-left.mudx4-in-view  { opacity: 1; transform: none; }
+
+.mudx4-reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s var(--mud-easing), transform 0.8s var(--mud-easing);
+}
+
+.mudx4-reveal-right.mudx4-in-view { opacity: 1; transform: none; }
+
+/* ----------------------------------------------------------------
+   MARQUEE
+   ---------------------------------------------------------------- */
+marquee-component {
+  border-top: 1px solid rgba(232,160,32,0.18);
+  border-bottom: 1px solid rgba(232,160,32,0.18);
+}
+
+marquee-component p {
+  letter-spacing: 0.14em !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+}
+
+/* ----------------------------------------------------------------
+   FOOTER
+   ---------------------------------------------------------------- */
+#shopify-section-footer,
+.shopify-section footer {
+  border-top: 2px solid rgba(232,160,32,0.5) !important;
+}
+
+footer a:hover,
+.footer a:hover {
+  color: var(--mud-amber) !important;
+  transition: color 0.2s;
+}
+
+/* ----------------------------------------------------------------
+   PRECIOS
+   ---------------------------------------------------------------- */
+.price,
+.price__current,
+.price-item--regular,
+.price-item--sale {
+  color: var(--mud-amber) !important;
+  font-weight: 700 !important;
+}
+
+/* ----------------------------------------------------------------
+   SCROLLBAR
+   ---------------------------------------------------------------- */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: var(--mud-amber); border-radius: 2px; }
+
+/* ----------------------------------------------------------------
+   SELECCIÓN
+   ---------------------------------------------------------------- */
+::selection        { background: var(--mud-amber); color: #000; }
+:focus-visible     { outline: 2px solid var(--mud-amber) !important; outline-offset: 2px; }
+
+/* ----------------------------------------------------------------
+   MEDIA-WITH-CONTENT tipografía
+   ---------------------------------------------------------------- */
+media-with-content h2,
+.media-with-content h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem) !important;
+  line-height: 1.05 !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* ----------------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------------- */
+@media (max-width: 749px) {
+  .hero::before { display: none; }
+  .hero__container::after { width: 200px; height: 200px; }
+}
